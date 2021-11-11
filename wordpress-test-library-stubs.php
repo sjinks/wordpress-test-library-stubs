@@ -3155,23 +3155,91 @@ namespace {
      */
     class WP_UnitTestCase extends \WP_UnitTestCase_Base
     {
+        use \Yoast\PHPUnitPolyfills\Helpers\AssertAttributeHelper;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertClosedResource;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertEqualsSpecializations;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertFileDirectory;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertFileEqualsSpecializations;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertNumericType;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertObjectEquals;
+        use \Yoast\PHPUnitPolyfills\Polyfills\AssertStringContains;
+        use \Yoast\PHPUnitPolyfills\Polyfills\EqualToSpecializations;
+        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectException;
+        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionMessageMatches;
+        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionObject;
+        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectPHPException;
         /**
-         * Asserts that two variables are equal (with delta).
-         *
-         * This method has been backported from a more recent PHPUnit version,
-         * as tests running on PHP 5.6 use PHPUnit 5.7.x.
-         *
-         * @since 5.6.0
-         *
-         * @param mixed  $expected First value to compare.
-         * @param mixed  $actual   Second value to compare.
-         * @param float  $delta    Allowed numerical distance between two values to consider them equal.
-         * @param string $message  Optional. Message to display when the assertion fails.
-         *
-         * @throws ExpectationFailedException
-         * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+         * Wrapper method for the `set_up_before_class()` method for forward-compatibility with WP 5.9.
          */
-        public static function assertEqualsWithDelta($expected, $actual, $delta, $message = '')
+        public static function setUpBeforeClass()
+        {
+        }
+        /**
+         * Wrapper method for the `tear_down_after_class()` method for forward-compatibility with WP 5.9.
+         */
+        public static function tearDownAfterClass()
+        {
+        }
+        /**
+         * Wrapper method for the `set_up()` method for forward-compatibility with WP 5.9.
+         */
+        public function setUp()
+        {
+        }
+        /**
+         * Wrapper method for the `tear_down()` method for forward-compatibility with WP 5.9.
+         */
+        public function tearDown()
+        {
+        }
+        /**
+         * Wrapper method for the `assert_pre_conditions()` method for forward-compatibility with WP 5.9.
+         */
+        protected function assertPreConditions()
+        {
+        }
+        /**
+         * Wrapper method for the `assert_post_conditions()` method for forward-compatibility with WP 5.9.
+         */
+        protected function assertPostConditions()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        public static function set_up_before_class()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        public static function tear_down_after_class()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        protected function set_up()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        protected function tear_down()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        protected function assert_pre_conditions()
+        {
+        }
+        /**
+         * Placeholder method for forward-compatibility with WP 5.9.
+         */
+        protected function assert_post_conditions()
         {
         }
     }
