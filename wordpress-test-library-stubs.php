@@ -10,6 +10,23 @@ namespace {
     {
     }
     /**
+     * PHPUnit adapter layer.
+     *
+     * This class enhances the PHPUnit native `TestCase` with polyfills
+     * for assertions and expectation methods added between PHPUnit 4.8 - 9.5.
+     *
+     * Additionally, the Polyfill TestCase offers a workaround for the addition
+     * of the `void` return type to PHPUnit fixture methods by providing
+     * overloadable snake_case versions of the typical fixture method names and
+     * ensuring that PHPUnit handles those correctly.
+     *
+     * See {@link https://github.com/Yoast/PHPUnit-Polyfills} for full
+     * documentation on the available polyfills and other features.
+     */
+    abstract class PHPUnit_Adapter_TestCase extends \Yoast\PHPUnitPolyfills\TestCases\TestCase
+    {
+    }
+    /**
      * Defines a basic fixture to run multiple tests.
      *
      * Resets the state of the WordPress installation before and after every test.
@@ -18,7 +35,7 @@ namespace {
      *
      * All WordPress unit tests should inherit from this class.
      */
-    abstract class WP_UnitTestCase_Base extends \PHPUnit\Framework\TestCase
+    abstract class WP_UnitTestCase_Base extends \PHPUnit_Adapter_TestCase
     {
         protected static $forced_tickets = array();
         protected $expected_deprecated = array();
@@ -54,25 +71,25 @@ namespace {
         /**
          * Runs the routine before setting up all tests.
          */
-        public static function setUpBeforeClass()
+        public static function set_up_before_class()
         {
         }
         /**
          * Runs the routine after all tests have been run.
          */
-        public static function tearDownAfterClass()
+        public static function tear_down_after_class()
         {
         }
         /**
          * Runs the routine before each test is executed.
          */
-        public function setUp()
+        public function set_up()
         {
         }
         /**
          * After a test method runs, resets any state in WordPress the test method might have changed.
          */
-        public function tearDown()
+        public function tear_down()
         {
         }
         /**
@@ -230,11 +247,16 @@ namespace {
         /**
          * Throws an exception when called.
          *
-         * @throws WPDieException Exception containing the message.
+         * @since UT (3.7.0)
+         * @since 5.9.0 Added the `$title` and `$args` parameters.
          *
-         * @param string $message The `wp_die()` message.
+         * @throws WPDieException Exception containing the message and the response code.
+         *
+         * @param string|WP_Error $message The `wp_die()` message or WP_Error object.
+         * @param string          $title   The `wp_die()` title.
+         * @param string|array    $args    The `wp_die()` arguments.
          */
-        public function wp_die_handler($message)
+        public function wp_die_handler($message, $title, $args)
         {
         }
         /**
@@ -258,7 +280,7 @@ namespace {
          *
          * @since 4.2.0
          */
-        protected function assertPostConditions()
+        protected function assert_post_conditions()
         {
         }
         /**
@@ -284,7 +306,11 @@ namespace {
         {
         }
         /**
-         * PHPUnit 6+ compatibility shim.
+         * Redundant PHPUnit 6+ compatibility shim. DO NOT USE!
+         *
+         * This method is only left in place for backward compatibility reasons.
+         *
+         * @deprecated 5.9.0 Use the PHPUnit native expectException*() methods directly.
          *
          * @param mixed      $exception
          * @param string     $message
@@ -348,19 +374,27 @@ namespace {
         /**
          * Asserts that the given fields are present in the given object.
          *
-         * @param object $object The object to check.
-         * @param array  $fields The fields to check.
+         * @since UT (3.7.0)
+         * @since 5.9.0 Added the `$message` parameter.
+         *
+         * @param object $object  The object to check.
+         * @param array  $fields  The fields to check.
+         * @param string $message Optional. Message to display when the assertion fails.
          */
-        public function assertEqualFields($object, $fields)
+        public function assertEqualFields($object, $fields, $message = '')
         {
         }
         /**
          * Asserts that two values are equal, with whitespace differences discarded.
          *
-         * @param string $expected The expected value.
-         * @param string $actual   The actual value.
+         * @since UT (3.7.0)
+         * @since 5.9.0 Added the `$message` parameter.
+         *
+         * @param mixed  $expected The expected value.
+         * @param mixed  $actual   The actual value.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertDiscardWhitespace($expected, $actual)
+        public function assertDiscardWhitespace($expected, $actual, $message = '')
         {
         }
         /**
@@ -368,11 +402,13 @@ namespace {
          *
          * @since 5.6.0
          * @since 5.8.0 Added support for nested arrays.
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param string|array $expected The expected value.
-         * @param string|array $actual   The actual value.
+         * @param mixed  $expected The expected value.
+         * @param mixed  $actual   The actual value.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertSameIgnoreEOL($expected, $actual)
+        public function assertSameIgnoreEOL($expected, $actual, $message = '')
         {
         }
         /**
@@ -380,65 +416,77 @@ namespace {
          *
          * @since 5.4.0
          * @since 5.6.0 Turned into an alias for `::assertSameIgnoreEOL()`.
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param string $expected The expected value.
-         * @param string $actual   The actual value.
+         * @param mixed  $expected The expected value.
+         * @param mixed  $actual   The actual value.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertEqualsIgnoreEOL($expected, $actual)
+        public function assertEqualsIgnoreEOL($expected, $actual, $message = '')
         {
         }
         /**
          * Asserts that the contents of two un-keyed, single arrays are the same, without accounting for the order of elements.
          *
          * @since 5.6.0
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param array $expected Expected array.
-         * @param array $actual   Array to check.
+         * @param array  $expected Expected array.
+         * @param array  $actual   Array to check.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertSameSets($expected, $actual)
+        public function assertSameSets($expected, $actual, $message = '')
         {
         }
         /**
          * Asserts that the contents of two un-keyed, single arrays are equal, without accounting for the order of elements.
          *
          * @since 3.5.0
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param array $expected Expected array.
-         * @param array $actual   Array to check.
+         * @param array  $expected Expected array.
+         * @param array  $actual   Array to check.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertEqualSets($expected, $actual)
+        public function assertEqualSets($expected, $actual, $message = '')
         {
         }
         /**
          * Asserts that the contents of two keyed, single arrays are the same, without accounting for the order of elements.
          *
          * @since 5.6.0
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param array $expected Expected array.
-         * @param array $actual   Array to check.
+         * @param array  $expected Expected array.
+         * @param array  $actual   Array to check.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertSameSetsWithIndex($expected, $actual)
+        public function assertSameSetsWithIndex($expected, $actual, $message = '')
         {
         }
         /**
          * Asserts that the contents of two keyed, single arrays are equal, without accounting for the order of elements.
          *
          * @since 4.1.0
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param array $expected Expected array.
-         * @param array $actual   Array to check.
+         * @param array  $expected Expected array.
+         * @param array  $actual   Array to check.
+         * @param string $message  Optional. Message to display when the assertion fails.
          */
-        public function assertEqualSetsWithIndex($expected, $actual)
+        public function assertEqualSetsWithIndex($expected, $actual, $message = '')
         {
         }
         /**
          * Asserts that the given variable is a multidimensional array, and that all arrays are non-empty.
          *
          * @since 4.8.0
+         * @since 5.9.0 Added the `$message` parameter.
          *
-         * @param array $array Array to check.
+         * @param array  $array   Array to check.
+         * @param string $message Optional. Message to display when the assertion fails.
          */
-        public function assertNonEmptyMultidimensionalArray($array)
+        public function assertNonEmptyMultidimensionalArray($array, $message = '')
         {
         }
         /**
@@ -462,10 +510,8 @@ namespace {
          *
          * This is a custom extension of the PHPUnit requirements handling.
          *
-         * Contains legacy code for skipping tests that are associated with an open Trac ticket.
-         * Core tests no longer support this behaviour.
-         *
          * @since 3.5.0
+         * @deprecated 5.9.0 This method has not been functional since PHPUnit 7.0.
          */
         protected function checkRequirements()
         {
@@ -484,7 +530,6 @@ namespace {
          * Skips the current test if there is an open Unit Test Trac ticket associated with it.
          *
          * @since 3.5.0
-         *
          * @deprecated No longer used since the Unit Test Trac was merged into the Core Trac.
          *
          * @param int $ticket_id Ticket number.
@@ -714,7 +759,7 @@ namespace {
      */
     class WP_PHPUnit_Util_Getopt
     {
-        function __construct($argv)
+        public function __construct($argv)
         {
         }
     }
@@ -774,6 +819,7 @@ namespace {
         public function __construct($data)
         {
         }
+        #[ReturnTypeWillChange]
         public function jsonSerialize()
         {
         }
@@ -903,7 +949,7 @@ namespace {
          *
          * @param int    $page_num       Page of results.
          * @param string $object_subtype Optional. Object subtype name. Default empty.
-         * @return array List of URLs for a sitemap.
+         * @return array[] Array of URL information for a sitemap.
          */
         public function get_url_list($page_num, $object_subtype = '')
         {
@@ -944,7 +990,7 @@ namespace {
          *
          * @param int    $page_num       Page of results.
          * @param string $object_subtype Optional. Object subtype name. Default empty.
-         * @return array List of URLs for a sitemap.
+         * @return array[] Array of URL information for a sitemap.
          */
         public function get_url_list($page_num, $object_subtype = '')
         {
@@ -998,7 +1044,7 @@ namespace {
          *
          * @param int    $page_num       Page of results.
          * @param string $object_subtype Optional. Object subtype name. Default empty.
-         * @return array List of URLs for a sitemap.
+         * @return array[] Array of URL information for a sitemap.
          */
         public function get_url_list($page_num, $object_subtype = '')
         {
@@ -1639,7 +1685,7 @@ namespace {
          * @param array $args                   Array or string of arguments for inserting a term.
          * @param null  $generation_definitions The default values.
          *
-         * @return WP_Term|WP_Error|null WP_Term on success. WP_error if taxonomy does not exist. Null for miscellaneous failure.
+         * @return WP_Term|WP_Error|null WP_Term on success. WP_Error if taxonomy does not exist. Null for miscellaneous failure.
          */
         public function create_and_get($args = array(), $generation_definitions = \null)
         {
@@ -1649,7 +1695,7 @@ namespace {
          *
          * @param int $term_id ID of the term to retrieve.
          *
-         * @return WP_Term|WP_Error|null WP_Term on success. WP_error if taxonomy does not exist. Null for miscellaneous failure.
+         * @return WP_Term|WP_Error|null WP_Term on success. WP_Error if taxonomy does not exist. Null for miscellaneous failure.
          */
         public function get_object_by_id($term_id)
         {
@@ -1818,14 +1864,14 @@ namespace {
         // Enable to debug WP_Filesystem_Base::find_folder() / etc.
         public $errors = array();
         public $method = 'MockFS';
-        function __construct()
+        public function __construct()
         {
         }
-        function connect()
+        public function connect()
         {
         }
         // Copy of core's function, but accepts a path.
-        function abspath($path = \false)
+        public function abspath($path = \false)
         {
         }
         // Mock FS-specific functions:
@@ -1833,13 +1879,13 @@ namespace {
          * Sets initial filesystem environment and/or clears the current environment.
          * Can also be passed the initial filesystem to be setup which is passed to self::setfs()
          */
-        function init($paths = '', $home_dir = '/')
+        public function init($paths = '', $home_dir = '/')
         {
         }
         /**
          * "Bulk Loads" a filesystem into the internal virtual filesystem
          */
-        function setfs($paths)
+        public function setfs($paths)
         {
         }
         /**
@@ -1855,31 +1901,31 @@ namespace {
         {
         }
         // Here starteth the WP_Filesystem functions.
-        function mkdir($path, $chmod = \false, $chown = \false, $chgrp = \false)
+        public function mkdir($path, $chmod = \false, $chown = \false, $chgrp = \false)
         {
         }
-        function put_contents($path, $contents = '', $mode = \null)
+        public function put_contents($path, $contents = '', $mode = \null)
         {
         }
-        function get_contents($file)
+        public function get_contents($file)
         {
         }
-        function cwd()
+        public function cwd()
         {
         }
-        function chdir($path)
+        public function chdir($path)
         {
         }
-        function exists($path)
+        public function exists($path)
         {
         }
-        function is_file($file)
+        public function is_file($file)
         {
         }
-        function is_dir($path)
+        public function is_dir($path)
         {
         }
-        function dirlist($path = '.', $include_hidden = \true, $recursive = \false)
+        public function dirlist($path = '.', $include_hidden = \true, $recursive = \false)
         {
         }
     }
@@ -1891,13 +1937,13 @@ namespace {
         // The type of the entry 'f' for file, 'd' for directory.
         public $path;
         // The full path to the entry.
-        function __construct($path)
+        public function __construct($path)
         {
         }
-        function is_file()
+        public function is_file()
         {
         }
-        function is_dir()
+        public function is_dir()
         {
         }
     }
@@ -1911,7 +1957,7 @@ namespace {
         public $type = 'f';
         public $contents = '';
         // The contents of the file.
-        function __construct($path, $contents = '')
+        public function __construct($path, $contents = '')
         {
         }
     }
@@ -1961,16 +2007,33 @@ namespace {
         {
         }
     }
+    /**
+     * File for Mock_Invokable class.
+     *
+     * @package WordPress
+     * @subpackage UnitTests
+     */
+    /**
+     * Class Mock_Invokable.
+     *
+     * This class is used to mock a class that has an `__invoke` method.
+     */
+    class Mock_Invokable
+    {
+        public function __invoke()
+        {
+        }
+    }
     class MockPHPMailer extends \PHPMailer\PHPMailer\PHPMailer
     {
         public $mock_sent = array();
-        function preSend()
+        public function preSend()
         {
         }
         /**
          * Override postSend() so mail isn't actually sent.
          */
-        function postSend()
+        public function postSend()
         {
         }
         /**
@@ -2825,257 +2888,13 @@ namespace {
         {
         }
     }
-    /**
-     * A PHPUnit TestListener that exposes your slowest running tests by outputting
-     * results directly to the console.
-     */
-    class SpeedTrapListener implements \PHPUnit_Framework_TestListener
-    {
-        /**
-         * Internal tracking for test suites.
-         *
-         * Increments as more suites are run, then decremented as they finish. All
-         * suites have been run when returns to 0.
-         *
-         * @var integer
-         */
-        protected $suites = 0;
-        /**
-         * Time in milliseconds at which a test will be considered "slow" and be
-         * reported by this listener.
-         *
-         * @var int
-         */
-        protected $slow_threshold;
-        /**
-         * Number of tests to report on for slowness.
-         *
-         * @var int
-         */
-        protected $report_length;
-        /**
-         * Collection of slow tests.
-         *
-         * @var array
-         */
-        protected $slow = array();
-        /**
-         * Construct a new instance.
-         *
-         * @param array $options
-         */
-        public function __construct(array $options = array())
-        {
-        }
-        /**
-         * An error occurred.
-         *
-         * @param PHPUnit_Framework_Test $test
-         * @param Exception              $e
-         * @param float                  $time
-         */
-        public function addError(\PHPUnit_Framework_Test $test, \Exception $e, $time)
-        {
-        }
-        /**
-         * A warning occurred.
-         *
-         * @param PHPUnit_Framework_Test    $test
-         * @param PHPUnit_Framework_Warning $e
-         * @param float                     $time
-         * @since Method available since Release 5.1.0
-         */
-        public function addWarning(\PHPUnit_Framework_Test $test, \PHPUnit_Framework_Warning $e, $time)
-        {
-        }
-        /**
-         * A failure occurred.
-         *
-         * @param PHPUnit_Framework_Test                 $test
-         * @param PHPUnit_Framework_AssertionFailedError $e
-         * @param float                                  $time
-         */
-        public function addFailure(\PHPUnit_Framework_Test $test, \PHPUnit_Framework_AssertionFailedError $e, $time)
-        {
-        }
-        /**
-         * Incomplete test.
-         *
-         * @param PHPUnit_Framework_Test $test
-         * @param Exception              $e
-         * @param float                  $time
-         */
-        public function addIncompleteTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
-        {
-        }
-        /**
-         * Risky test.
-         *
-         * @param PHPUnit_Framework_Test $test
-         * @param Exception              $e
-         * @param float                  $time
-         * @since  Method available since Release 4.0.0
-         */
-        public function addRiskyTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
-        {
-        }
-        /**
-         * Skipped test.
-         *
-         * @param PHPUnit_Framework_Test $test
-         * @param Exception              $e
-         * @param float                  $time
-         */
-        public function addSkippedTest(\PHPUnit_Framework_Test $test, \Exception $e, $time)
-        {
-        }
-        /**
-         * A test started.
-         *
-         * @param PHPUnit_Framework_Test $test
-         */
-        public function startTest(\PHPUnit_Framework_Test $test)
-        {
-        }
-        /**
-         * A test ended.
-         *
-         * @param PHPUnit_Framework_Test $test
-         * @param float                  $time
-         */
-        public function endTest(\PHPUnit_Framework_Test $test, $time)
-        {
-        }
-        /**
-         * A test suite started.
-         *
-         * @param PHPUnit_Framework_TestSuite $suite
-         */
-        public function startTestSuite(\PHPUnit_Framework_TestSuite $suite)
-        {
-        }
-        /**
-         * A test suite ended.
-         *
-         * @param PHPUnit_Framework_TestSuite $suite
-         */
-        public function endTestSuite(\PHPUnit_Framework_TestSuite $suite)
-        {
-        }
-        /**
-         * Whether the given test execution time is considered slow.
-         *
-         * @param int $time           Test execution time in milliseconds
-         * @param int $slow_threshold Test execution time at which a test should be considered slow (milliseconds)
-         * @return bool
-         */
-        protected function isSlow($time, $slow_threshold)
-        {
-        }
-        /**
-         * Stores a test as slow.
-         *
-         * @param PHPUnit_Framework_TestCase $test
-         * @param int                        $time Test execution time in milliseconds
-         */
-        protected function addSlowTest(\PHPUnit_Framework_TestCase $test, $time)
-        {
-        }
-        /**
-         * Whether at least one test has been considered slow.
-         *
-         * @return bool
-         */
-        protected function hasSlowTests()
-        {
-        }
-        /**
-         * Convert PHPUnit's reported test time (microseconds) to milliseconds.
-         *
-         * @param float $time
-         * @return int
-         */
-        protected function toMilliseconds($time)
-        {
-        }
-        /**
-         * Label for describing a test.
-         *
-         * @param PHPUnit_Framework_TestCase $test
-         * @return string
-         */
-        protected function makeLabel(\PHPUnit_Framework_TestCase $test)
-        {
-        }
-        /**
-         * Calculate number of slow tests to report about.
-         *
-         * @return int
-         */
-        protected function getReportLength()
-        {
-        }
-        /**
-         * Find how many slow tests occurred that won't be shown due to list length.
-         *
-         * @return int Number of hidden slow tests
-         */
-        protected function getHiddenCount()
-        {
-        }
-        /**
-         * Renders slow test report header.
-         */
-        protected function renderHeader()
-        {
-        }
-        /**
-         * Renders slow test report body.
-         */
-        protected function renderBody()
-        {
-        }
-        /**
-         * Renders slow test report footer.
-         */
-        protected function renderFooter()
-        {
-        }
-        /**
-         * Populate options into class internals.
-         *
-         * @param array $options
-         */
-        protected function loadOptions(array $options)
-        {
-        }
-        /**
-         * Get slow test threshold for given test. A TestCase can override the
-         * suite-wide slow threshold by using the annotation @slowThreshold with
-         * the threshold value in milliseconds.
-         *
-         * The following test will only be considered slow when its execution time
-         * reaches 5000ms (5 seconds):
-         *
-         * <code>
-         *
-         * @slowThreshold 5000
-         * public function testLongRunningProcess() {}
-         * </code>
-         *
-         * @param PHPUnit_Framework_TestCase $test
-         * @return int
-         */
-        protected function getSlowThreshold(\PHPUnit_Framework_TestCase $test)
-        {
-        }
-    }
     class Spy_REST_Server extends \WP_REST_Server
     {
         public $sent_headers = array();
         public $sent_body = '';
         public $last_request = \null;
         public $override_by_default = \false;
+        public $status = \null;
         /**
          * Gets the raw $endpoints data from the server.
          *
@@ -3112,6 +2931,14 @@ namespace {
         {
         }
         /**
+         * Stores last set status.
+         *
+         * @param int $code HTTP status.
+         */
+        public function set_status($status)
+        {
+        }
+        /**
          * Overrides the dispatch method so we can get a handle on the request object.
          *
          * @param  WP_REST_Request $request Request to attempt dispatching.
@@ -3145,103 +2972,12 @@ namespace {
         }
     }
     /**
-     * Defines a basic fixture to run multiple tests.
-     *
-     * Resets the state of the WordPress installation before and after every test.
-     *
-     * Includes utility functions and assertions useful for testing WordPress.
+     * Basic abstract test class.
      *
      * All WordPress unit tests should inherit from this class.
      */
-    class WP_UnitTestCase extends \WP_UnitTestCase_Base
+    abstract class WP_UnitTestCase extends \WP_UnitTestCase_Base
     {
-        use \Yoast\PHPUnitPolyfills\Helpers\AssertAttributeHelper;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertClosedResource;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertEqualsSpecializations;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertFileDirectory;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertFileEqualsSpecializations;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertIsType;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertNumericType;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertObjectEquals;
-        use \Yoast\PHPUnitPolyfills\Polyfills\AssertStringContains;
-        use \Yoast\PHPUnitPolyfills\Polyfills\EqualToSpecializations;
-        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectException;
-        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionMessageMatches;
-        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionObject;
-        use \Yoast\PHPUnitPolyfills\Polyfills\ExpectPHPException;
-        /**
-         * Wrapper method for the `set_up_before_class()` method for forward-compatibility with WP 5.9.
-         */
-        public static function setUpBeforeClass()
-        {
-        }
-        /**
-         * Wrapper method for the `tear_down_after_class()` method for forward-compatibility with WP 5.9.
-         */
-        public static function tearDownAfterClass()
-        {
-        }
-        /**
-         * Wrapper method for the `set_up()` method for forward-compatibility with WP 5.9.
-         */
-        public function setUp()
-        {
-        }
-        /**
-         * Wrapper method for the `tear_down()` method for forward-compatibility with WP 5.9.
-         */
-        public function tearDown()
-        {
-        }
-        /**
-         * Wrapper method for the `assert_pre_conditions()` method for forward-compatibility with WP 5.9.
-         */
-        protected function assertPreConditions()
-        {
-        }
-        /**
-         * Wrapper method for the `assert_post_conditions()` method for forward-compatibility with WP 5.9.
-         */
-        protected function assertPostConditions()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        public static function set_up_before_class()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        public static function tear_down_after_class()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        protected function set_up()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        protected function tear_down()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        protected function assert_pre_conditions()
-        {
-        }
-        /**
-         * Placeholder method for forward-compatibility with WP 5.9.
-         */
-        protected function assert_post_conditions()
-        {
-        }
     }
     /**
      * Ajax test case class
@@ -3276,7 +3012,7 @@ namespace {
          * @var array
          */
         protected static $_core_actions_post = array('oembed_cache', 'image-editor', 'delete-comment', 'delete-tag', 'delete-link', 'delete-meta', 'delete-post', 'trash-post', 'untrash-post', 'delete-page', 'dim-comment', 'add-link-category', 'add-tag', 'get-tagcloud', 'get-comments', 'replyto-comment', 'edit-comment', 'add-menu-item', 'add-meta', 'add-user', 'closed-postboxes', 'hidden-columns', 'update-welcome-panel', 'menu-get-metabox', 'wp-link-ajax', 'menu-locations-save', 'menu-quick-search', 'meta-box-order', 'get-permalink', 'sample-permalink', 'inline-save', 'inline-save-tax', 'find_posts', 'widgets-order', 'save-widget', 'set-post-thumbnail', 'date_format', 'time_format', 'wp-fullscreen-save-post', 'wp-remove-post-lock', 'dismiss-wp-pointer', 'send-attachment-to-editor', 'heartbeat', 'nopriv_heartbeat', 'get-revision-diffs', 'save-user-color-scheme', 'update-widget', 'query-themes', 'parse-embed', 'set-attachment-thumbnail', 'parse-media-shortcode', 'destroy-sessions', 'install-plugin', 'update-plugin', 'press-this-save-post', 'press-this-add-category', 'crop-image', 'generate-password', 'save-wporg-username', 'delete-plugin', 'search-plugins', 'search-install-plugins', 'activate-plugin', 'update-theme', 'delete-theme', 'install-theme', 'get-post-thumbnail-html', 'wp-privacy-export-personal-data', 'wp-privacy-erase-personal-data');
-        public static function setUpBeforeClass()
+        public static function set_up_before_class()
         {
         }
         /**
@@ -3284,7 +3020,7 @@ namespace {
          *
          * Overrides wp_die(), pretends to be Ajax, and suppresses E_WARNINGs.
          */
-        public function setUp()
+        public function set_up()
         {
         }
         /**
@@ -3292,7 +3028,7 @@ namespace {
          *
          * Resets $_POST, removes the wp_die() override, restores error reporting.
          */
-        public function tearDown()
+        public function tear_down()
         {
         }
         /**
@@ -3359,226 +3095,7 @@ namespace {
         {
         }
     }
-    /**
-     * Test block supported styles.
-     *
-     * @package    WordPress
-     * @subpackage UnitTests
-     * @since      5.6.0
-     */
-    class Block_Supported_Styles_Test extends \WP_UnitTestCase
-    {
-        /**
-         * Registered block names.
-         *
-         * @var string[]
-         */
-        private $registered_block_names = array();
-        /**
-         * Tear down each test method.
-         */
-        public function tearDown()
-        {
-        }
-        /**
-         * Registers a block type.
-         *
-         * @param string|WP_Block_Type $name Block type name including namespace, or alternatively a
-         *                                   complete WP_Block_Type instance. In case a WP_Block_Type
-         *                                   is provided, the $args parameter will be ignored.
-         * @param array                $args {
-         *     Optional. Array of block type arguments. Any arguments may be defined, however the
-         *     ones described below are supported by default. Default empty array.
-         *
-         *     @type callable $render_callback Callback used to render blocks of this block type.
-         * }
-         */
-        protected function register_block_type($name, $args)
-        {
-        }
-        /**
-         * Retrieves attribute such as 'class' or 'style' from the rendered block string.
-         *
-         * @param string $attribute Name of attribute to get.
-         * @param string $block String of rendered block to check.
-         */
-        private function get_attribute_from_block($attribute, $block)
-        {
-        }
-        /**
-         * Retrieves block content from the rendered block string
-         * (i.e. what's wrapped by the block wrapper `<div />`).
-         *
-         * @param string $block String of rendered block to check.
-         */
-        private function get_content_from_block($block)
-        {
-        }
-        /**
-         * Block content to test with (i.e. what's wrapped by the block wrapper `<div />`).
-         *
-         * @var string
-         */
-        const BLOCK_CONTENT = '
-		<p data-image-description="&lt;p&gt;Test!&lt;/p&gt;">Test</p>
-		<p>äöü</p>
-		<p>ß</p>
-		<p>系の家庭に</p>
-		<p>Example &lt;p&gt;Test!&lt;/p&gt;</p>
-	';
-        /**
-         * Returns the rendered output for the current block.
-         *
-         * @param array $block Block to render.
-         *
-         * @return string Rendered output for the current block.
-         */
-        private function render_example_block($block)
-        {
-        }
-        /**
-         * Runs assertions that the rendered output has expected class/style attrs.
-         *
-         * @param array  $block Block to render.
-         * @param string $expected_classes Expected output class attr string.
-         * @param string $expected_styles Expected output styles attr string.
-         */
-        private function assert_styles_and_classes_match($block, $expected_classes, $expected_styles)
-        {
-        }
-        /**
-         * Runs assertions that the rendered output has expected content and class/style attrs.
-         *
-         * @param array  $block Block to render.
-         * @param string $expected_classes Expected output class attr string.
-         * @param string $expected_styles Expected output styles attr string.
-         */
-        private function assert_content_and_styles_and_classes_match($block, $expected_classes, $expected_styles)
-        {
-        }
-        /**
-         * Tests color support for named color support for named colors.
-         */
-        function test_named_color_support()
-        {
-        }
-        /**
-         * Tests color support for custom colors.
-         */
-        function test_custom_color_support()
-        {
-        }
-        /**
-         * Tests link color support for named colors.
-         */
-        function test_named_link_color_support()
-        {
-        }
-        /**
-         * Tests link color support for custom colors.
-         */
-        function test_custom_link_color_support()
-        {
-        }
-        /**
-         * Tests gradient color support for named gradients.
-         */
-        function test_named_gradient_support()
-        {
-        }
-        /**
-         * Tests gradient color support for custom gradients.
-         */
-        function test_custom_gradient_support()
-        {
-        }
-        /**
-         * Tests that style attributes for colors are not applied without the support flag.
-         */
-        function test_color_unsupported()
-        {
-        }
-        /**
-         * Tests support for named font sizes.
-         */
-        function test_named_font_size()
-        {
-        }
-        /**
-         * Tests support for custom font sizes.
-         */
-        function test_custom_font_size()
-        {
-        }
-        /**
-         * Tests that font size attributes are not applied without support flag.
-         */
-        function test_font_size_unsupported()
-        {
-        }
-        /**
-         * Tests line height support.
-         */
-        function test_line_height()
-        {
-        }
-        /**
-         * Tests line height not applied without support flag.
-         */
-        function test_line_height_unsupported()
-        {
-        }
-        /**
-         * Tests support for block alignment.
-         */
-        function test_block_alignment()
-        {
-        }
-        /**
-         * Tests block alignment requires support to be added.
-         */
-        function test_block_alignment_unsupported()
-        {
-        }
-        /**
-         * Tests all support flags together to ensure they work together as expected.
-         */
-        function test_all_supported()
-        {
-        }
-        /**
-         * Tests that only styles for the supported flag are added.
-         * Verify one support enabled does not imply multiple supports enabled.
-         */
-        function test_one_supported()
-        {
-        }
-        /**
-         * Tests custom classname server-side block support.
-         */
-        function test_custom_classnames_support()
-        {
-        }
-        /**
-         * Tests custom classname server-side block support opt-out.
-         */
-        function test_custom_classnames_support_opt_out()
-        {
-        }
-        /**
-         * Tests generated classname server-side block support opt-out.
-         */
-        function test_generatted_classnames_support_opt_out()
-        {
-        }
-        /**
-         * Ensures libxml_internal_errors is being used instead of @ warning suppression
-         */
-        public function test_render_block_suppresses_warnings_without_at_suppression()
-        {
-        }
-    }
-    class WP_Canonical_UnitTestCase extends \WP_UnitTestCase
+    abstract class WP_Canonical_UnitTestCase extends \WP_UnitTestCase
     {
         public static $old_current_user;
         public static $author_id;
@@ -3598,7 +3115,7 @@ namespace {
         public static function wpTearDownAfterClass()
         {
         }
-        public function setUp()
+        public function set_up()
         {
         }
         /**
@@ -3653,10 +3170,10 @@ namespace {
     abstract class WP_Test_REST_Controller_Testcase extends \WP_Test_REST_TestCase
     {
         protected $server;
-        public function setUp()
+        public function set_up()
         {
         }
-        public function tearDown()
+        public function tear_down()
         {
         }
         public abstract function test_register_routes();
@@ -3767,13 +3284,16 @@ namespace {
         {
         }
     }
-    class WP_XMLRPC_UnitTestCase extends \WP_UnitTestCase
+    abstract class WP_XMLRPC_UnitTestCase extends \WP_UnitTestCase
     {
+        /**
+         * @var wp_xmlrpc_server
+         */
         protected $myxmlrpcserver;
-        function setUp()
+        public function set_up()
         {
         }
-        function tearDown()
+        public function tear_down()
         {
         }
         protected static function make_user_by_role($role)
@@ -3820,47 +3340,47 @@ namespace {
         /**
          * PHP5 constructor.
          */
-        function __construct($debug = 0)
+        public function __construct($debug = 0)
         {
         }
-        function reset()
+        public function reset()
         {
         }
-        function current_filter()
+        public function current_filter()
         {
         }
-        function action($arg)
+        public function action($arg)
         {
         }
-        function action2($arg)
+        public function action2($arg)
         {
         }
-        function filter($arg)
+        public function filter($arg)
         {
         }
-        function filter2($arg)
+        public function filter2($arg)
         {
         }
-        function filter_append($arg)
+        public function filter_append($arg)
         {
         }
-        function filterall($tag, ...$args)
+        public function filterall($tag, ...$args)
         {
         }
         // Return a list of all the actions, tags and args.
-        function get_events()
+        public function get_events()
         {
         }
         // Return a count of the number of times the action was called since the last reset.
-        function get_call_count($tag = '')
+        public function get_call_count($tag = '')
         {
         }
         // Return an array of the tags that triggered calls to this action.
-        function get_tags()
+        public function get_tags()
         {
         }
         // Return an array of args passed in calls to this action.
-        function get_args()
+        public function get_args()
         {
         }
     }
@@ -3873,19 +3393,19 @@ namespace {
         /**
          * PHP5 constructor.
          */
-        function __construct($in)
+        public function __construct($in)
         {
         }
-        function parse($in)
+        public function parse($in)
         {
         }
-        function start_handler($parser, $name, $attributes)
+        public function start_handler($parser, $name, $attributes)
         {
         }
-        function data_handler($parser, $data)
+        public function data_handler($parser, $data)
         {
         }
-        function end_handler($parser, $name)
+        public function end_handler($parser, $name)
         {
         }
     }
@@ -3914,11 +3434,11 @@ namespace {
      *
      * start() and stop() must be called in pairs, for example:
      *
-     * function something_to_profile() {
-     * 	wppf_start(__FUNCTION__);
-     * 	do_stuff();
-     * 	wppf_stop();
-     * }
+     *     function something_to_profile() {
+     *         wppf_start( __FUNCTION__ );
+     *         do_stuff();
+     *         wppf_stop();
+     *     }
      *
      * Multiple profile blocks are permitted, and they may be nested.
      */
