@@ -10,6 +10,9 @@ on:
 env:
   PHP_VERSION: "7.4"
 
+permissions:
+  contents: read
+
 jobs:
   ci:
     name: CI
