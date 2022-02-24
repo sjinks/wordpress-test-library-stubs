@@ -12,6 +12,8 @@ env:
 
 jobs:
   ci:
+    permissions:
+      contents: read
     name: CI
     runs-on: ubuntu-latest
     steps:
