@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   ci:
-    name: CI
+    name: Build and test
     runs-on: ubuntu-latest
     steps:
       - name: Check out source code
