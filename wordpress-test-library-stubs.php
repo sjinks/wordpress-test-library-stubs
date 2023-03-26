@@ -44,12 +44,14 @@ namespace {
         protected $caught_doing_it_wrong = array();
         protected static $hooks_saved = array();
         protected static $ignore_files;
-        public function __isset($name)
-        {
-        }
-        public function __get($name)
-        {
-        }
+        /**
+         * Fixture factory.
+         *
+         * @deprecated 6.1.0 Use the WP_UnitTestCase_Base::factory() method instead.
+         *
+         * @var WP_UnitTest_Factory
+         */
+        protected $factory;
         /**
          * Fetches the factory object for generating WordPress fixtures.
          *
@@ -261,6 +263,8 @@ namespace {
         }
         /**
          * Sets up the expectations for testing a deprecated call.
+         *
+         * @since 3.7.0
          */
         public function expectDeprecated()
         {
@@ -269,6 +273,10 @@ namespace {
          * Handles a deprecated expectation.
          *
          * The DocBlock should contain `@expectedDeprecated` to trigger this.
+         *
+         * @since 3.7.0
+         * @since 6.1.0 Includes the actual unexpected `_doing_it_wrong()` message
+         *              or deprecation notice in the output if one is encountered.
          */
         public function expectedDeprecated()
         {
@@ -288,8 +296,9 @@ namespace {
          *
          * @since 4.2.0
          *
-         * @param string $deprecated Name of the function, method, class, or argument that is deprecated. Must match
-         *                           the first parameter of the `_deprecated_function()` or `_deprecated_argument()` call.
+         * @param string $deprecated Name of the function, method, class, or argument that is deprecated.
+         *                           Must match the first parameter of the `_deprecated_function()`
+         *                           or `_deprecated_argument()` call.
          */
         public function setExpectedDeprecated($deprecated)
         {
@@ -299,8 +308,8 @@ namespace {
          *
          * @since 4.2.0
          *
-         * @param string $doing_it_wrong Name of the function, method, or class that appears in the first argument
-         *                               of the source `_doing_it_wrong()` call.
+         * @param string $doing_it_wrong Name of the function, method, or class that appears in
+         *                               the first argument of the source `_doing_it_wrong()` call.
          */
         public function setExpectedIncorrectUsage($doing_it_wrong)
         {
@@ -310,6 +319,7 @@ namespace {
          *
          * This method is only left in place for backward compatibility reasons.
          *
+         * @since 4.8.0
          * @deprecated 5.9.0 Use the PHPUnit native expectException*() methods directly.
          *
          * @param mixed      $exception
@@ -322,17 +332,28 @@ namespace {
         /**
          * Adds a deprecated function to the list of caught deprecated calls.
          *
-         * @param string $function The deprecated function.
+         * @since 3.7.0
+         * @since 6.1.0 Added the `$replacement`, `$version`, and `$message` parameters.
+         *
+         * @param string $function    The deprecated function.
+         * @param string $replacement The function that should have been called.
+         * @param string $version     The version of WordPress that deprecated the function.
+         * @param string $message     Optional. A message regarding the change.
          */
-        public function deprecated_function_run($function)
+        public function deprecated_function_run($function, $replacement, $version, $message = '')
         {
         }
         /**
          * Adds a function called in a wrong way to the list of `_doing_it_wrong()` calls.
          *
+         * @since 3.7.0
+         * @since 6.1.0 Added the `$message` and `$version` parameters.
+         *
          * @param string $function The function to add.
+         * @param string $message  A message explaining what has been done incorrectly.
+         * @param string $version  The version of WordPress where the message was added.
          */
-        public function doing_it_wrong_run($function)
+        public function doing_it_wrong_run($function, $message, $version)
         {
         }
         /**
@@ -490,6 +511,54 @@ namespace {
         {
         }
         /**
+         * Checks each of the WP_Query is_* functions/properties against expected boolean value.
+         *
+         * Any properties that are listed by name as parameters will be expected to be true; all others are
+         * expected to be false. For example, assertQueryTrue( 'is_single', 'is_feed' ) means is_single()
+         * and is_feed() must be true and everything else must be false to pass.
+         *
+         * @since 2.5.0
+         * @since 3.8.0 Moved from `Tests_Query_Conditionals` to `WP_UnitTestCase`.
+         * @since 5.3.0 Formalized the existing `...$prop` parameter by adding it
+         *              to the function signature.
+         *
+         * @param string ...$prop Any number of WP_Query properties that are expected to be true for the current request.
+         */
+        public function assertQueryTrue(...$prop)
+        {
+        }
+        /**
+         * Helper function to convert a single-level array containing text strings to a named data provider.
+         *
+         * The value of the data set will also be used as the name of the data set.
+         *
+         * Typical usage of this method:
+         *
+         *     public function data_provider_for_test_name() {
+         *         $array = array(
+         *             'value1',
+         *             'value2',
+         *         );
+         *
+         *         return $this->text_array_to_dataprovider( $array );
+         *     }
+         *
+         * The returned result will look like:
+         *
+         *     array(
+         *         'value1' => array( 'value1' ),
+         *         'value2' => array( 'value2' ),
+         *     )
+         *
+         * @since 6.1.0
+         *
+         * @param array $input Input array.
+         * @return array Array which is usable as a test data provider with named data sets.
+         */
+        public static function text_array_to_dataprovider($input)
+        {
+        }
+        /**
          * Sets the global state to as if a given URL has been requested.
          *
          * This sets:
@@ -583,23 +652,6 @@ namespace {
         {
         }
         /**
-         * Checks each of the WP_Query is_* functions/properties against expected boolean value.
-         *
-         * Any properties that are listed by name as parameters will be expected to be true; all others are
-         * expected to be false. For example, assertQueryTrue( 'is_single', 'is_feed' ) means is_single()
-         * and is_feed() must be true and everything else must be false to pass.
-         *
-         * @since 2.5.0
-         * @since 3.8.0 Moved from `Tests_Query_Conditionals` to `WP_UnitTestCase`.
-         * @since 5.3.0 Formalized the existing `...$prop` parameter by adding it
-         *              to the function signature.
-         *
-         * @param string ...$prop Any number of WP_Query properties that are expected to be true for the current request.
-         */
-        public function assertQueryTrue(...$prop)
-        {
-        }
-        /**
          * Selectively deletes a file.
          *
          * Does not delete a file if its path is set in the `$ignore_files` property.
@@ -613,6 +665,8 @@ namespace {
          * Selectively deletes files from a directory.
          *
          * Does not delete files if their paths are set in the `$ignore_files` property.
+         *
+         * @since 4.0.0
          *
          * @param string $path Directory path.
          */
@@ -663,14 +717,17 @@ namespace {
         {
         }
         /**
-         * Retrieves all directories contained inside a directory and stores them in the `$matched_dirs` property.
+         * Retrieves all directories contained inside a directory.
          * Hidden directories are ignored.
          *
          * This is a helper for the `delete_folders()` method.
          *
          * @since 4.1.0
+         * @since 6.1.0 No longer sets a (dynamic) property to keep track of the directories,
+         *              but returns an array of the directories instead.
          *
          * @param string $dir Path to the directory to scan.
+         * @return string[] List of directories.
          */
         public function scandir($dir)
         {
@@ -777,7 +834,7 @@ namespace {
      */
     class Basic_Object
     {
-        private $foo = 'bar';
+        private $arbitrary_props = array('foo' => 'bar');
         public function __get($name)
         {
         }
@@ -1087,6 +1144,14 @@ namespace {
         public $file;
         public $bucket;
         public $data_ref;
+        /**
+         * The current context.
+         *
+         * @link https://www.php.net/manual/en/class.streamwrapper.php
+         *
+         * @var resource|null
+         */
+        public $context;
         /**
          * Initializes internal state for reading the given URL.
          *
@@ -2087,13 +2152,13 @@ namespace {
          *
          * @var array
          */
-        public $global_groups = array('users', 'userlogins', 'usermeta', 'site-options', 'site-lookup', 'blog-lookup', 'blog-details', 'rss');
+        public $global_groups = array();
         /**
          * List of groups not saved to Memcached.
          *
          * @var array
          */
-        public $no_mc_groups = array('counts');
+        public $no_mc_groups = array();
         /**
          * Prefix used for global groups.
          *
@@ -2157,6 +2222,19 @@ namespace {
          * @return bool True on success, false on failure.
          */
         public function addByKey($server_key, $key, $value, $group = 'default', $expiration = 0)
+        {
+        }
+        /**
+         * Adds multiple values to cache.
+         *
+         * @param array  $items      Array of keys and values to be added.
+         * @param string $group      Optional. Where the cache contents are grouped. Default empty.
+         * @param int    $expiration Optional. When to expire the cache contents, in seconds.
+         *                           Default 0 (no expiration).
+         * @return bool[] Array of return values, grouped by key. Each value is either
+         *                true on success, or false if cache key and group already exist.
+         */
+        public function addMultiple(array $items, $group = '', $expiration = 0)
         {
         }
         /**
@@ -2337,6 +2415,17 @@ namespace {
         {
         }
         /**
+         * Removes multiple items from the cache.
+         *
+         * @param array  $keys  Array of keys under which the cache to deleted.
+         * @param string $group Optional. Where the cache contents are grouped. Default empty.
+         * @return bool[] Array of return values, grouped by key. Each value is either
+         *                true on success, or false if the contents were not deleted.
+         */
+        public function deleteMultiple($keys, $group)
+        {
+        }
+        /**
          * Fetches the next result.
          *
          * @link https://www.php.net/manual/en/memcached.fetch.php
@@ -2487,6 +2576,19 @@ namespace {
          * @return bool|array The array of found items on success, false on failure.
          */
         public function getMultiByKey($server_key, $keys, $groups = 'default', &$cas_tokens = \null, $flags = \null)
+        {
+        }
+        /**
+         * Get multiple items from the cache.
+         *
+         * @param array  $keys  Array of keys under which the cache contents are stored.
+         * @param string $group Optional. Where the cache contents are grouped. Default empty.
+         * @param bool   $force Optional. Whether to force an update of the local cache
+         *                      from the persistent cache. Default false.
+         * @return array Array of return values, grouped by key. Each value is either
+         *               the cache contents on success, or false on failure.
+         */
+        public function getMultiple($keys, $group = '', $force = \false)
         {
         }
         /**
@@ -2746,6 +2848,19 @@ namespace {
          * @return bool True on success, false on failure.
          */
         public function setMultiByKey($server_key, $items, $groups = 'default', $expiration = 0)
+        {
+        }
+        /**
+         * Sets multiple values in cache.
+         *
+         * @param array  $items      Array of keys and values to be set.
+         * @param string $group      Optional. Where the cache contents are grouped. Default empty.
+         * @param int    $expiration Optional. When to expire the cache contents, in seconds.
+         *                           Default 0 (no expiration).
+         * @return bool[] Array of return values, grouped by key. Each value is either
+         *                true on success, or false on failure.
+         */
+        public function setMultiple(array $items, $group = '', $expiration = 0)
         {
         }
         /**
@@ -3332,6 +3447,8 @@ namespace {
      *
      *     $ma = new MockAction();
      *     add_action( 'foo', array( &$ma, 'action' ) );
+     *
+     * @since UT (3.7.0)
      */
     class MockAction
     {
@@ -3339,47 +3456,100 @@ namespace {
         public $debug;
         /**
          * PHP5 constructor.
+         *
+         * @since UT (3.7.0)
          */
         public function __construct($debug = 0)
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function reset()
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function current_filter()
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function action($arg)
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function action2($arg)
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function filter($arg)
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function filter2($arg)
         {
         }
+        /**
+         * @since UT (3.7.0)
+         */
         public function filter_append($arg)
         {
         }
-        public function filterall($tag, ...$args)
+        /**
+         * Does not return the result, so it's safe to use with the 'all' filter.
+         *
+         * @since UT (3.7.0)
+         */
+        public function filterall($hook_name, ...$args)
         {
         }
-        // Return a list of all the actions, tags and args.
+        /**
+         * Returns a list of all the actions, hook names and args.
+         *
+         * @since UT (3.7.0)
+         */
         public function get_events()
         {
         }
-        // Return a count of the number of times the action was called since the last reset.
-        public function get_call_count($tag = '')
+        /**
+         * Returns a count of the number of times the action was called since the last reset.
+         *
+         * @since UT (3.7.0)
+         */
+        public function get_call_count($hook_name = '')
         {
         }
-        // Return an array of the tags that triggered calls to this action.
+        /**
+         * Returns an array of the hook names that triggered calls to this action.
+         *
+         * @since 6.1.0
+         */
+        public function get_hook_names()
+        {
+        }
+        /**
+         * Returns an array of the hook names that triggered calls to this action.
+         *
+         * @since UT (3.7.0)
+         * @since 6.1.0 Turned into an alias for ::get_hook_names().
+         */
         public function get_tags()
         {
         }
-        // Return an array of args passed in calls to this action.
+        /**
+         * Returns an array of args passed in calls to this action.
+         *
+         * @since UT (3.7.0)
+         */
         public function get_args()
         {
         }
@@ -3412,7 +3582,7 @@ namespace {
     /**
      * Use to create objects by yourself
      */
-    class MockClass
+    class MockClass extends \stdClass
     {
     }
     /**
@@ -3501,6 +3671,9 @@ namespace {
     function data_whole_posts()
     {
     }
+    function custom_i18n_plugin_test()
+    {
+    }
     /*
     Plugin Name: Dummy Plugin
     Plugin URI: https://wordpress.org/
@@ -3512,6 +3685,9 @@ namespace {
     {
     }
     function register_theme_blocks()
+    {
+    }
+    function custom_i18n_theme_test()
     {
     }
     // Minimum functions.php to pass unit tests.
@@ -3591,27 +3767,36 @@ namespace {
     /**
      * Handles the WP die handler by outputting the given values as text.
      *
-     * @param string $message The message.
-     * @param string $title   The title.
-     * @param array  $args    Array with arguments.
+     * @since UT (3.7.0)
+     * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
+     *
+     * @param string|WP_Error $message Error message or WP_Error object.
+     * @param string          $title   Error title.
+     * @param array           $args    Arguments passed to wp_die().
      */
     function _wp_die_handler($message, $title = '', $args = array())
     {
     }
     /**
      * Disables the WP die handler.
+     *
+     * @since UT (3.7.0)
      */
     function _disable_wp_die()
     {
     }
     /**
      * Enables the WP die handler.
+     *
+     * @since UT (3.7.0)
      */
     function _enable_wp_die()
     {
     }
     /**
      * Returns the die handler.
+     *
+     * @since UT (3.7.0)
      *
      * @return string The die handler.
      */
@@ -3621,6 +3806,8 @@ namespace {
     /**
      * Returns the die handler.
      *
+     * @since 4.9.0
+     *
      * @return string The die handler.
      */
     function _wp_die_handler_filter_exit()
@@ -3629,9 +3816,12 @@ namespace {
     /**
      * Dies without an exit.
      *
-     * @param string $message The message.
-     * @param string $title   The title.
-     * @param array  $args    Array with arguments.
+     * @since 4.0.0
+     * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
+     *
+     * @param string|WP_Error $message Error message or WP_Error object.
+     * @param string          $title   Error title.
+     * @param array           $args    Arguments passed to wp_die().
      */
     function _wp_die_handler_txt($message, $title, $args)
     {
@@ -3639,9 +3829,12 @@ namespace {
     /**
      * Dies with an exit.
      *
-     * @param string $message The message.
-     * @param string $title   The title.
-     * @param array  $args    Array with arguments.
+     * @since 4.9.0
+     * @since 6.1.0 The `$message` parameter can accept a `WP_Error` object.
+     *
+     * @param string|WP_Error $message Error message or WP_Error object.
+     * @param string          $title   Error title.
+     * @param array           $args    Arguments passed to wp_die().
      */
     function _wp_die_handler_exit($message, $title, $args)
     {
@@ -3745,6 +3938,19 @@ namespace {
      * @return bool True on success, false on failure.
      */
     function wp_cache_add_by_key($server_key, $key, $value, $group = '', $expiration = 0)
+    {
+    }
+    /**
+     * Adds multiple values to the cache in one call, if the cache keys don't already exist.
+     *
+     * @param array  $items      Array of keys and values to be added.
+     * @param string $group      Optional. Where the cache contents are grouped. Default empty.
+     * @param int    $expiration Optional. When to expire the cache contents, in seconds.
+     *                           Default 0 (no expiration).
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false if cache key and group already exist.
+     */
+    function wp_cache_add_multiple(array $items, $group = '', $expiration = 0)
     {
     }
     /**
@@ -3935,6 +4141,17 @@ namespace {
     {
     }
     /**
+     * Deletes multiple values from the cache in one call.
+     *
+     * @param array  $keys  Array of keys under which the cache to deleted.
+     * @param string $group Optional. Where the cache contents are grouped. Default empty.
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false if the contents were not deleted.
+     */
+    function wp_cache_delete_multiple(array $keys, $group = '')
+    {
+    }
+    /**
      * Fetches the next result.
      *
      * @link https://www.php.net/manual/en/memcached.fetch.php
@@ -3963,6 +4180,19 @@ namespace {
      * @return bool True on success, false on failure.
      */
     function wp_cache_flush($delay = 0)
+    {
+    }
+    /**
+     * Determines whether the object cache implementation supports a particular feature.
+     *
+     * @since 6.1.0
+     *
+     * @param string $feature Name of the feature to check for. Possible values include:
+     *                        'add_multiple', 'set_multiple', 'get_multiple', 'delete_multiple',
+     *                        'flush_runtime', 'flush_group'.
+     * @return bool True if the feature is supported, false otherwise.
+     */
+    function wp_cache_supports($feature)
     {
     }
     /**
@@ -4075,6 +4305,19 @@ namespace {
      * @return bool|array The array of found items on success, false on failure.
      */
     function wp_cache_get_multi_by_key($server_key, $keys, $groups = '', &$cas_tokens = \null, $flags = \null)
+    {
+    }
+    /**
+     * Retrieves multiple values from the cache in one call.
+     *
+     * @param array  $keys  Array of keys under which the cache contents are stored.
+     * @param string $group Optional. Where the cache contents are grouped. Default empty.
+     * @param bool   $force Optional. Whether to force an update of the local cache
+     *                      from the persistent cache. Default false.
+     * @return array Array of return values, grouped by key. Each value is either
+     *               the cache contents on success, or false on failure.
+     */
+    function wp_cache_get_multiple($keys, $group = '', $force = \false)
     {
     }
     /**
@@ -4322,6 +4565,21 @@ namespace {
      * @return bool True on success, false on failure.
      */
     function wp_cache_set_multi_by_key($server_key, $items, $groups = 'default', $expiration = 0)
+    {
+    }
+    /**
+     * Sets multiple values to the cache in one call.
+     *
+     * Differs from wp_cache_add_multiple() in that it will always write data.
+     *
+     * @param array  $items      Array of keys and values to be set.
+     * @param string $group      Optional. Where the cache contents are grouped. Default empty.
+     * @param int    $expiration Optional. When to expire the cache contents, in seconds.
+     *                           Default 0 (no expiration).
+     * @return bool[] Array of return values, grouped by key. Each value is either
+     *                true on success, or false on failure.
+     */
+    function wp_cache_set_multiple(array $items, $group = '', $expiration = 0)
     {
     }
     /**
