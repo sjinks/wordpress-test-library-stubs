@@ -1,5 +1,24 @@
 <?php
 
+namespace {
+    class Token_Counting_HTML_Processor extends \WP_HTML_Processor
+    {
+        /**
+         * List of tokens that have already been seen.
+         *
+         * @var array<string, int>
+         */
+        public $token_seen_count = array();
+        /**
+         * Gets next token.
+         *
+         * @return bool Whether next token was matched.
+         */
+        public function next_token(): bool
+        {
+        }
+    }
+}
 namespace Test\Sub\Sub {
     class Namespaced_Widget extends \WP_Widget
     {
@@ -13,7 +32,7 @@ namespace {
      * PHPUnit adapter layer.
      *
      * This class enhances the PHPUnit native `TestCase` with polyfills
-     * for assertions and expectation methods added between PHPUnit 4.8 - 9.5.
+     * for assertions and expectation methods added between PHPUnit 4.8 - 9.6.
      *
      * Additionally, the Polyfill TestCase offers a workaround for the addition
      * of the `void` return type to PHPUnit fixture methods by providing
@@ -131,6 +150,12 @@ namespace {
          * @param array|WP_Error $response HTTP response.
          */
         public function skipTestOnTimeout($response)
+        {
+        }
+        /**
+         * Reset the lazy load meta queue.
+         */
+        protected function reset_lazyload_queue()
         {
         }
         /**
@@ -513,6 +538,31 @@ namespace {
         {
         }
         /**
+         * Assert that two text strings representing file paths are the same, while ignoring
+         * OS-specific differences in the directory separators.
+         *
+         * This allows for tests to be compatible for running on both *nix based as well as Windows OS.
+         *
+         * @since 6.7.0
+         *
+         * @param string $path_a File or directory path.
+         * @param string $path_b File or directory path.
+         */
+        public function assertSamePathIgnoringDirectorySeparators($path_a, $path_b)
+        {
+        }
+        /**
+         * Normalize directory separators in a file path to be a forward slash.
+         *
+         * @since 6.7.0
+         *
+         * @param string $path File or directory path.
+         * @return string The normalized file or directory path.
+         */
+        public function normalizeDirectorySeparatorsInPath($path)
+        {
+        }
+        /**
          * Checks each of the WP_Query is_* functions/properties against expected boolean value.
          *
          * Any properties that are listed by name as parameters will be expected to be true; all others are
@@ -694,7 +744,7 @@ namespace {
          * @since 4.0.0
          *
          * @param string $dir Path to the directory to scan.
-         * @return array List of file paths.
+         * @return string[] List of file paths.
          */
         public function files_in_dir($dir)
         {
@@ -704,7 +754,7 @@ namespace {
          *
          * @since 4.0.0
          *
-         * @return array List of file paths.
+         * @return string[] List of file paths.
          */
         public function scan_user_uploads()
         {
@@ -799,12 +849,92 @@ namespace {
         /**
          * Touches the given file and its directory if it doesn't already exist.
          *
-         * This can be used to ensure a file that is implictly relied on in a test exists
+         * This can be used to ensure a file that is implicitly relied on in a test exists
          * without it having to be built.
          *
          * @param string $file The file name.
          */
         public static function touch($file)
+        {
+        }
+        /**
+         * Wrapper for `wp_safe_remote_request()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_safe_remote_request($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_safe_remote_get()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_safe_remote_get($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_safe_remote_post()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_safe_remote_post($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_safe_remote_head()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_safe_remote_head($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_remote_request()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_remote_request($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_remote_get()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_remote_get($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_remote_post()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_remote_post($url, $args = array())
+        {
+        }
+        /**
+         * Wrapper for `wp_remote_head()` that retries on error and skips the test on timeout.
+         *
+         * @param string $url  URL to retrieve.
+         * @param array  $args Optional. Request arguments. Default empty array.
+         * @return array|WP_Error The response or WP_Error on failure.
+         */
+        protected function wp_remote_head($url, $args = array())
         {
         }
     }
@@ -838,7 +968,6 @@ namespace {
      */
     class Basic_Object
     {
-        private $arbitrary_props = array('foo' => 'bar');
         public function __get($name)
         {
         }
@@ -852,10 +981,6 @@ namespace {
         {
         }
         public function __call($name, $arguments)
-        {
-        }
-        // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid
-        private function callMe()
         {
         }
     }
@@ -876,11 +1001,10 @@ namespace {
      */
     class JsonSerializable_Object implements \JsonSerializable
     {
-        private $data;
         public function __construct($data)
         {
         }
-        #[ReturnTypeWillChange]
+        #[\ReturnTypeWillChange]
         public function jsonSerialize()
         {
         }
@@ -907,6 +1031,42 @@ namespace {
          * @return string Rendered block HTML.
          */
         public function render($attributes = array(), $content = '')
+        {
+        }
+    }
+    /**
+     * WP_Fake_Hasher for testing
+     *
+     * @package WordPress
+     * @since 6.8.0
+     */
+    /**
+     * Test class.
+     *
+     * @since 6.8.0
+     */
+    class WP_Fake_Hasher
+    {
+        public function __construct()
+        {
+        }
+        /**
+         * Hashes a password.
+         *
+         * @param string $password Password to hash.
+         * @return string Hashed password.
+         */
+        public function HashPassword(string $password)
+        {
+        }
+        /**
+         * Checks the password hash.
+         *
+         * @param string $password Password to check.
+         * @param string $hash     Hash to check against.
+         * @return bool Whether the password hash is valid.
+         */
+        public function CheckPassword(string $password, string $hash)
         {
         }
     }
@@ -1157,14 +1317,6 @@ namespace {
          */
         public $context;
         /**
-         * Initializes internal state for reading the given URL.
-         *
-         * @param string $url A URL of the form "protocol://bucket/path".
-         */
-        private function open($url)
-        {
-        }
-        /**
          * Opens a URL.
          *
          * @see streamWrapper::stream_open
@@ -1228,17 +1380,13 @@ namespace {
          * Creates a directory.
          *
          * @see streamWrapper::mkdir
+         *
+         * @param string $path    Directory which should be created.
+         * @param int    $mode    The value passed to mkdir().
+         * @param int    $options A bitwise mask of values, such as STREAM_MKDIR_RECURSIVE.
+         * @return bool True on success, false on failure.
          */
         public function mkdir($path, $mode, $options)
-        {
-        }
-        /**
-         * Creates a file metadata object, with defaults.
-         *
-         * @param array $stats Partial file metadata.
-         * @return array Complete file metadata.
-         */
-        private function make_stat($stats)
         {
         }
         /**
@@ -1263,14 +1411,6 @@ namespace {
          * @see streamWrapper::unlink
          */
         public function unlink($path)
-        {
-        }
-        /**
-         * Interprets this stream's path as a directory, and returns the entry.
-         *
-         * @return A reference to the data entry for the directory.
-         */
-        private function &get_directory_ref()
         {
         }
     }
@@ -1372,7 +1512,7 @@ namespace {
          *
          * @return int|WP_Error The object ID on success, WP_Error object on failure.
          */
-        public abstract function create_object($args);
+        abstract public function create_object($args);
         /**
          * Updates an existing object.
          *
@@ -1383,7 +1523,7 @@ namespace {
          *
          * @return int|WP_Error The object ID on success, WP_Error object on failure.
          */
-        public abstract function update_object($object_id, $fields);
+        abstract public function update_object($object_id, $fields);
         /**
          * Creates an object and returns its ID.
          *
@@ -1423,7 +1563,7 @@ namespace {
          *
          * @return mixed The object. Can be anything.
          */
-        public abstract function get_object_by_id($object_id);
+        abstract public function get_object_by_id($object_id);
         /**
          * Creates multiple objects.
          *
@@ -1452,7 +1592,7 @@ namespace {
          * @param array|null  $callbacks              Optional. Array with callbacks to apply on the fields.
          *                                            Default null.
          *
-         * @return array|WP_Error Combined array on success. WP_Error when default value is incorrent.
+         * @return array|WP_Error Combined array on success. WP_Error when default value is incorrect.
          */
         public function generate_args($args = array(), $generation_definitions = \null, &$callbacks = \null)
         {
@@ -1627,8 +1767,6 @@ namespace {
          *
          * @param int   $blog_id ID of the site to update.
          * @param array $fields  The fields to update.
-         *
-         * @return void
          */
         public function update_object($blog_id, $fields)
         {
@@ -1809,8 +1947,6 @@ namespace {
          *
          * @param int   $network_id ID of the network to update.
          * @param array $fields  The fields to update.
-         *
-         * @return void
          */
         public function update_object($network_id, $fields)
         {
@@ -1840,7 +1976,6 @@ namespace {
      */
     class WP_UnitTest_Factory_For_Term extends \WP_UnitTest_Factory_For_Thing
     {
-        private $taxonomy;
         const DEFAULT_TAXONOMY = 'post_tag';
         public function __construct($factory = \null, $taxonomy = \null)
         {
@@ -2075,12 +2210,6 @@ namespace {
     }
     class WP_Filesystem_MockFS extends \WP_Filesystem_Base
     {
-        private $cwd;
-        // Holds a array of objects which contain an array of objects, etc.
-        private $fs = \null;
-        // Holds a array of /path/to/file.php and /path/to/dir/ map to an object in $fs above.
-        // A fast, more efficient way of determining if a path exists, and access to that node.
-        private $fs_map = array();
         public $verbose = \false;
         // Enable to debug WP_Filesystem_Base::find_folder() / etc.
         public $errors = array();
@@ -2109,20 +2238,14 @@ namespace {
         public function setfs($paths)
         {
         }
-        /**
-         * Locates a filesystem "node"
-         */
-        private function locate_node($path)
-        {
-        }
-        /**
-         * Locates a filesystem node for the parent of the given item
-         */
-        private function locate_parent_node($path)
-        {
-        }
         // Here starteth the WP_Filesystem functions.
-        public function mkdir($path, $chmod = \false, $chown = \false, $chgrp = \false)
+        public function mkdir(
+            $path,
+            /* Optional args are ignored */
+            $chmod = \false,
+            $chown = \false,
+            $chgrp = \false
+        )
         {
         }
         public function put_contents($path, $contents = '', $mode = \null)
@@ -2172,6 +2295,7 @@ namespace {
     {
         public $type = 'd';
         public $children = array();
+        // The child nodes of this directory.
     }
     class MockFS_File_Node extends \MockFS_Node
     {
@@ -2245,7 +2369,12 @@ namespace {
         {
         }
     }
-    class MockPHPMailer extends \PHPMailer\PHPMailer\PHPMailer
+    /**
+     * Test class extending WP_PHPMailer.
+     *
+     * @since 4.5.0
+     */
+    class MockPHPMailer extends \WP_PHPMailer
     {
         public $mock_sent = array();
         public function preSend()
@@ -2327,6 +2456,18 @@ namespace {
          * @var string
          */
         public $blog_prefix = '';
+        /**
+         * Thirty days in seconds.
+         *
+         * @var int
+         */
+        public $thirty_days;
+        /**
+         * Current unix time stamp.
+         *
+         * @var int
+         */
+        public $now;
         /**
          * Instantiates the Memcached class.
          *
@@ -2610,6 +2751,14 @@ namespace {
          * @return bool True on success, false on failure.
          */
         public function flush($delay = 0)
+        {
+        }
+        /**
+         * Clears the in-memory cache of all data leaving the external cache untouched.
+         *
+         * @return bool Always returns true.
+         */
+        public function flush_runtime()
         {
         }
         /**
@@ -3120,7 +3269,6 @@ namespace {
          * @link http://wordpress.org/extend/plugins/memcached/
          *
          * @param array $groups Array of groups.
-         * @return void
          */
         public function add_global_groups($groups)
         {
@@ -3134,7 +3282,6 @@ namespace {
          * @link http://wordpress.org/extend/plugins/memcached/
          *
          * @param array $groups Array of groups.
-         * @return void
          */
         public function add_non_persistent_groups($groups)
         {
@@ -3153,7 +3300,6 @@ namespace {
          * Switches blog prefix, which changes the cache that is accessed.
          *
          * @param int $blog_id Blog to switch to.
-         * @return void
          */
         public function switch_to_blog($blog_id)
         {
@@ -3289,7 +3435,7 @@ namespace {
         /**
          * Sets up the test fixture.
          *
-         * Overrides wp_die(), pretends to be Ajax, and suppresses E_WARNINGs.
+         * Overrides wp_die(), pretends to be Ajax, and suppresses warnings.
          */
         public function set_up()
         {
@@ -3434,7 +3580,18 @@ namespace {
     }
     abstract class WP_Test_REST_TestCase extends \WP_UnitTestCase
     {
-        protected function assertErrorResponse($code, $response, $status = \null)
+        /**
+         * Asserts that the REST API response has the specified error.
+         *
+         * @since 4.4.0
+         * @since 6.6.0 Added the `$message` parameter.
+         *
+         * @param string|int                $code     Expected error code.
+         * @param WP_REST_Response|WP_Error $response REST API response.
+         * @param int                       $status   Optional. Status code.
+         * @param string                    $message  Optional. Message to display when the assertion fails.
+         */
+        protected function assertErrorResponse($code, $response, $status = \null, $message = '')
         {
         }
     }
@@ -3447,15 +3604,15 @@ namespace {
         public function tear_down()
         {
         }
-        public abstract function test_register_routes();
-        public abstract function test_context_param();
-        public abstract function test_get_items();
-        public abstract function test_get_item();
-        public abstract function test_create_item();
-        public abstract function test_update_item();
-        public abstract function test_delete_item();
-        public abstract function test_prepare_item();
-        public abstract function test_get_item_schema();
+        abstract public function test_register_routes();
+        abstract public function test_context_param();
+        abstract public function test_get_items();
+        abstract public function test_get_item();
+        abstract public function test_create_item();
+        abstract public function test_update_item();
+        abstract public function test_delete_item();
+        abstract public function test_prepare_item();
+        abstract public function test_get_item_schema();
         public function filter_rest_url_for_leading_slash($url, $path)
         {
         }
@@ -3596,7 +3753,7 @@ namespace {
         {
         }
     }
-    /*
+    /**
      * Helper class for testing code that involves actions and filters.
      *
      * Typical use:
@@ -3753,7 +3910,7 @@ namespace {
         {
         }
     }
-    /*
+    /**
      * A simple manually-instrumented profiler for WordPress.
      *
      * This records basic execution time, and a summary of the actions and SQL queries run within each block.
@@ -3827,7 +3984,62 @@ namespace {
     function data_whole_posts()
     {
     }
+    /**
+     * Stores a mapping from HTML5 named character reference to its transformation metadata.
+     *
+     * Example:
+     *
+     *     $entities['&copy;'] === array(
+     *         'codepoints' => array( 0xA9 ),
+     *         'characters' => '©',
+     *     );
+     *
+     * @see https://html.spec.whatwg.org/entities.json
+     *
+     * @var array.
+     */
+    $entities = \null;
+    /**
+     * Direct mapping from character reference name to UTF-8 string.
+     *
+     * Example:
+     *
+     *     $character_references['&copy;'] === '©';
+     *
+     * @var array.
+     */
+    $character_references = \null;
+    /**
+     * Contains the new contents for the auto-generated module.
+     *
+     * Note that in this template, the `$` is escaped with `\$` so that it
+     * comes through as a `$` in the output. Without escaping, PHP will look
+     * for a variable of the given name to interpolate into the template.
+     *
+     * @var string
+     */
+    $module_contents = \null;
+    /*
+    Plugin Name: Custom Dummy Plugin
+    Plugin URI: https://wordpress.org/
+    Description: For testing purposes only.
+    Version: 1.0.0
+    Text Domain: custom-internationalized-plugin
+    */
+    function custom_i18n_load_textdomain()
+    {
+    }
     function custom_i18n_plugin_test()
+    {
+    }
+    /*
+    Plugin Name: Dummy Plugin 2
+    Plugin URI: https://wordpress.org/
+    Description: For testing purposes only. Only has an .l10n.php translation file.
+    Version: 1.0.0
+    Text Domain: internationalized-plugin
+    */
+    function i18n_plugin_2_test()
     {
     }
     /*
@@ -4043,6 +4255,15 @@ namespace {
      * @since 5.0.0
      */
     function _unhook_block_registration()
+    {
+    }
+    /**
+     * After the init action has been run once, trying to re-register font collections can cause
+     * errors. To avoid this, unhook the font registration functions.
+     *
+     * @since 6.5.0
+     */
+    function _unhook_font_registration()
     {
     }
     /**
@@ -4342,6 +4563,14 @@ namespace {
      * @return bool True on success, false on failure.
      */
     function wp_cache_flush($delay = 0)
+    {
+    }
+    /**
+     * Removes all cache items from the in-memory runtime cache.
+     *
+     * @return bool True on success, false on failure.
+     */
+    function wp_cache_flush_runtime()
     {
     }
     /**
@@ -4760,7 +4989,6 @@ namespace {
      * Switches blog prefix, which changes the cache that is accessed.
      *
      * @param int $blog_id Blog to switch to.
-     * @return void
      */
     function wp_cache_switch_to_blog($blog_id)
     {
@@ -4769,7 +4997,6 @@ namespace {
      * Sets up Object Cache Global and assigns it.
      *
      * @global WP_Object_Cache $wp_object_cache WordPress Object Cache
-     * @return void
      */
     function wp_cache_init()
     {
@@ -4778,7 +5005,6 @@ namespace {
      * Adds a group or set of groups to the list of non-persistent groups.
      *
      * @param string|array $groups A group or an array of groups to add.
-     * @return void
      */
     function wp_cache_add_global_groups($groups)
     {
@@ -4787,7 +5013,6 @@ namespace {
      * Adds a group or set of groups to the list of non-Memcached groups.
      *
      * @param string|array $groups A group or an array of groups to add.
-     * @return void
      */
     function wp_cache_add_non_persistent_groups($groups)
     {
@@ -4806,16 +5031,16 @@ namespace {
      * Returns a string of the required length containing random characters. Note that
      * the maximum possible string length is 32.
      *
-     * @param int $len Optional. The required length. Default 32.
+     * @param int $length Optional. The required length. Default 32.
      * @return string The string.
      */
-    function rand_str($len = 32)
+    function rand_str($length = 32)
     {
     }
     /**
      * Returns a string of the required length containing random characters.
      *
-     * @param int $len The required length.
+     * @param int $length The required length.
      * @return string The string.
      */
     function rand_long_str($length)
