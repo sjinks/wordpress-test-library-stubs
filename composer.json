@@ -3,7 +3,7 @@
     "description": "Stubs for WordPress test library",
     "type": "library",
     "require-dev": {
-        "giacocorsiglia/stubs-generator": "^0.5.0",
+        "php-stubs/generator": "^0.8.5",
         "wp-phpunit/wp-phpunit": "^6.0"
     },
     "license": "MIT",
