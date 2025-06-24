@@ -4,7 +4,7 @@
 
 This package provides stub declarations for the WordPress Test Library.
 
-The stubs were generated directly from the source code with the help of [giacocorsiglia/stubs-generator](https://github.com/GiacoCorsiglia/php-stubs-generator).
+The stubs were generated directly from the source code with the help of [php-stubs/generator](https://github.com/php-stubs/generator).
 
 ## Installation
 
