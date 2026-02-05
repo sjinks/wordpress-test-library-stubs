@@ -67,16 +67,16 @@
         },
         {
             "name": "php-stubs/generator",
-            "version": "v0.8.5",
+            "version": "v0.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/generator.git",
-                "reference": "820db587692dfc9cabdb2aacda00fc16e896702f"
+                "reference": "2baea4f875ceda920379dc936aa9c9606f072404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/generator/zipball/820db587692dfc9cabdb2aacda00fc16e896702f",
-                "reference": "820db587692dfc9cabdb2aacda00fc16e896702f",
+                "url": "https://api.github.com/repos/php-stubs/generator/zipball/2baea4f875ceda920379dc936aa9c9606f072404",
+                "reference": "2baea4f875ceda920379dc936aa9c9606f072404",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,9 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "3.4.0 || ^3.12",
+                "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^1.0 || ^2.0",
+                "phpstan/phpstan-symfony": "^1.0 || ^2.0",
                 "phpunit/phpunit": "^9.4"
             },
             "bin": [
@@ -118,9 +120,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/generator/issues",
-                "source": "https://github.com/php-stubs/generator/tree/v0.8.5"
+                "source": "https://github.com/php-stubs/generator/tree/v0.8.6"
             },
-            "time": "2025-04-18T03:44:11+00:00"
+            "time": "2026-02-05T09:21:33+00:00"
         },
         {
             "name": "psr/container",
