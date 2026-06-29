@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c6932342959b545a46955868c1ea379",
+    "content-hash": "ec57c0d4b78f0797635ed99f15eafcda",
     "packages": [],
     "packages-dev": [
         {
@@ -67,27 +67,29 @@
         },
         {
             "name": "php-stubs/generator",
-            "version": "v0.8.6",
+            "version": "v0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-stubs/generator.git",
-                "reference": "2baea4f875ceda920379dc936aa9c9606f072404"
+                "reference": "7d0e5bd40fc1706e19c1f0b7396a0206e3193129"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-stubs/generator/zipball/2baea4f875ceda920379dc936aa9c9606f072404",
-                "reference": "2baea4f875ceda920379dc936aa9c9606f072404",
+                "url": "https://api.github.com/repos/php-stubs/generator/zipball/7d0e5bd40fc1706e19c1f0b7396a0206e3193129",
+                "reference": "7d0e5bd40fc1706e19c1f0b7396a0206e3193129",
                 "shasum": ""
             },
             "require": {
-                "nikic/php-parser": "^4.10 || ^5.1",
-                "php": "^7.3 || ^8.0",
+                "nikic/php-parser": "^4.18 || ^5.5",
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpdoc-parser": "^2.3",
                 "symfony/console": "^5.1 || ^6.0 || ^7.0",
                 "symfony/filesystem": "^5.0 || ^6.0 || ^7.0",
                 "symfony/finder": "^5.0 || ^6.0 || ^7.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "3.4.0 || ^3.12",
+                "mikey179/vfsstream": "^1.6",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^1.0 || ^2.0",
                 "phpstan/phpstan-symfony": "^1.0 || ^2.0",
@@ -120,9 +122,56 @@
             ],
             "support": {
                 "issues": "https://github.com/php-stubs/generator/issues",
-                "source": "https://github.com/php-stubs/generator/tree/v0.8.6"
+                "source": "https://github.com/php-stubs/generator/tree/v0.9.0"
             },
-            "time": "2026-02-05T09:21:33+00:00"
+            "time": "2026-06-28T19:49:32+00:00"
+        },
+        {
+            "name": "phpstan/phpdoc-parser",
+            "version": "2.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/phpdoc-parser.git",
+                "reference": "a004701b11273a26cd7955a61d67a7f1e525a45a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/a004701b11273a26cd7955a61d67a7f1e525a45a",
+                "reference": "a004701b11273a26cd7955a61d67a7f1e525a45a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "^2.0",
+                "nikic/php-parser": "^5.3.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "symfony/process": "^5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\PhpDocParser\\": [
+                        "src/"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPDoc parser with support for nullable, intersection and generic types",
+            "support": {
+                "issues": "https://github.com/phpstan/phpdoc-parser/issues",
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.3.2"
+            },
+            "time": "2026-01-25T14:56:51+00:00"
         },
         {
             "name": "psr/container",
